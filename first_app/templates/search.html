@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'mystyle.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+      crossorigin="anonymous"
+    />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <title>Results</title>
+  </head>
+  <body>
+    <!--------------------- Navbar ---------------------->
+    <div class="pos-f-t">
+      <div class="collapse" id="navbarToggleExternalContent">
+        <div class="bg-dark p-4">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/movies">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/search">Search</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/my_list">My Filmlist</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/watched">Watched</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm rounded">
+      <a class="navbar-brand" id="logo" href="/movies">Filmlist</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/movies"
+              >Home</a
+            >
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/search">Search<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/my_list">My Filmlist</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/watched">Watched</a>
+          </li>
+        </ul>
+        <p class="mb-0">
+          <a href="/profile" class="mr-1 text-white-50 nhyper">Profile</a>
+          <a href="/signout" class="mr-3 ml-1 text-white-50 nhyper">Sign out</a>
+        </p>
+      </div>
+    </nav>
+      <div class="container">
+        <div class="row">
+        <div class="search mt-5 input-group ">
+          <input class="form-control form-inline col-10" type="text" id='query' placeholder="Search for a movie..." required></input>
+          <span class="input-group-append"><button class="btn btn-secondary " id='search' >Search</button></span>
+        </div>
+        <!--Movie Options-->
+        <div id='display'>
+        </div>
+        <div id='container'>
+        </div>
+        <div class="col-10 row justify-content-center" id="info">
+        </div>
+      </div>
+
+    <script type="text/javascript">
+    (function() {
+  window.tmdb = {
+    "api_key": "e7ba26a5f58bd7e6bc19051ad022ea11",
+    "base_uri": "https://api.themoviedb.org/3",
+    "images_uri": "http://image.tmdb.org/t/p",
+    "timeout": 5000,
+    "size": "/w154",
+    call: function(url, params, success, error) {
+      var params_str = "api_key=" + tmdb.api_key;
+      for (var key in params) {
+        if (params.hasOwnProperty(key)) {
+          params_str += "&" + key + "=" + encodeURIComponent(params[key]);
+        }
+      }
+      var xhr = new XMLHttpRequest();
+      xhr.timeout = tmdb.timeout;
+      xhr.ontimeout = function() {
+        throw ("Request timed out: " + url + " " + params_str);
+      };
+      xhr.open("GET", tmdb.base_uri + url + "?" + params_str, true);
+      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.responseType = "text";
+      xhr.onreadystatechange = function() {
+        if (this.readyState === 4) {
+          if (this.status === 200) {
+            if (typeof success == "function") {
+              success(JSON.parse(this.response));
+            } else {
+              throw ('No success callback, but the request gave results')
+            }
+          } else {
+            if (typeof error == "function") {
+              error(JSON.parse(this.response));
+            } else {
+              throw ('No error callback')
+            }
+          }
+        }
+      };
+      xhr.send();
+    }
+  }
+})()
+
+window.addEventListener('keydown', function(e) {
+  handleKeyPress(e);
+}, false);
+
+var input = document.getElementById('search');
+input.addEventListener('click', search, false);
+
+function handleKeyPress(e) {
+  var key = e.keyCode || e.which;
+  if (key == 13) {
+    search();
+  }
+}
+
+function search() {
+
+  var info = document.getElementById('info');
+  info.innerHTML = '';
+
+  var query = document.getElementById('query').value;
+
+
+  tmdb.call('/search/movie', {
+      'query': query,
+    },
+    function(e) {
+      var results = Object.keys(e.results);
+      console.log("Success: " + e);
+
+      for (var i = 0; i < e.results.length; i++) {
+        console.log(JSON.stringify(e.results[i]));
+        var show = document.createElement('div');
+        show.id = i;
+        var json = e.results[i];
+        var poster = tmdb.images_uri + tmdb.size + e.results[i].poster_path;
+        var name = e.results[i].title;
+        var img = new Image();
+        img.src = poster;
+        info.appendChild(show);
+        show.appendChild(img);
+        if (img.src === 'http://image.tmdb.org/t/p/w154null') {
+          img.src = 'https://lh3.googleusercontent.com/CFQWWXfAzWwjFqm5BVJypU4U2f97Q5DAxwc5QooKHP3SgpADLCPhlPFGM8UNfoAFC5mTxw5VrmljFE0qPS9gLuDxB_JKxXiS896cuDdJHxI6_OXsGsFFuJFe37NBWkK_7Ck2lN5B=w2400';
+        }
+        
+
+        function click() {
+          var display = document.getElementById('display');
+          display.innerHTML = '';
+          //img.src = '';
+          var i = this.id;
+          console.log(i);
+          var displayPoster = tmdb.images_uri + tmdb.size + e.results[i].poster_path;
+          img.src = displayPoster;
+          if (img.src === 'http://image.tmdb.org/t/p/w154null') {
+            img.src = 'https://lh3.googleusercontent.com/CFQWWXfAzWwjFqm5BVJypU4U2f97Q5DAxwc5QooKHP3SgpADLCPhlPFGM8UNfoAFC5mTxw5VrmljFE0qPS9gLuDxB_JKxXiS896cuDdJHxI6_OXsGsFFuJFe37NBWkK_7Ck2lN5B=w2400';
+          }
+          window.location.href="/movie/"+ e.results[i].id;
+
+
+        };
+        show.addEventListener('click', click, false);
+      };
+    },
+    function(e) {
+      console.log("Error: " + e)
+    }
+  )
+}; 
+</script>
+</body>
+</html>

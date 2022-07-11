@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'mystyle.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+      crossorigin="anonymous"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <title>Filmlist</title>
+  </head>
+  <body>
+    <!--------------------- Navbar -------------------->
+    <div class="pos-f-t">
+      <div class="collapse" id="navbarToggleExternalContent">
+        <div class="bg-dark p-4">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/movies">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/search">Search</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/my_list">My Filmlist</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/watched">Watched</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <a class="navbar-brand" id="logo" href="/movies">Filmlist</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/movies">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/search">Search</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/my_list">My Filmlist</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/watched">Watched</a>
+          </li>
+        </ul>
+        <p class="mb-0">
+          <a href="/profile" class="mr-1 text-white-50 nhyper active"
+            >Profile<span class="sr-only">(current)</span></a
+          >
+          <a href="/signout" class="mr-3 ml-1 text-white-50 nhyper">Sign out</a>
+        </p>
+      </div>
+    </nav>
+    <!--------------------- Update Form -------------------->
+    <div class="container">
+      <h2 class="text-light mt-3">{{ this_user.first_name }}'s Profile</h2>
+      <div>
+        {% if messages %}
+        <ul class="messages">
+              {% for message in messages %}         
+          <li
+            {%
+            if
+            message.tags
+            %}
+            class="{{ message.tags }} text-light"
+            {%
+            endif
+            %}
+          >
+            {{ message }}
+          </li>
+              {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      <form action="/update/{{this_user.id}}" method="POST">
+        {% csrf_token %}
+        <div class="form-group mt-3">
+          <label class="text-light" for="first_name_update">First Name</label>
+          <input
+            type="text"
+            class="form-control col-12 col-md-8"
+            id="first_name_update"
+            name="first_name"
+            value="{{this_user.first_name}}"
+          />
+        </div>
+        <div class="form-group">
+          <label class="text-light" for="last_name_update">Last Name</label>
+          <input
+            type="text"
+            class="form-control col-12 col-md-8"
+            name="last_name"
+            id="last_name_update"
+            value="{{this_user.last_name}}"
+          />
+        </div>
+        <div class="form-group">
+          <label class="text-light" for="email_update">Email</label>
+          <input
+            type="text"
+            class="form-control col-12 col-md-8"
+            name="email"
+            id="email_update"
+            value="{{this_user.email}}"
+          />
+        </div>
+        <div class="form-group">
+          <label class="text-light" for="password_update">Password</label>
+          <input
+            type="password"
+            class="form-control col-12 col-md-8 edih"
+            id="password_update"
+            name="password"
+            value="{{this_user.password}}"
+          />
+        </div>
+        <div class="form-group">
+          <label class="text-light" for="pass_conf_update"
+            >Password Confirmation</label
+          >
+
+          <input
+            type="password"
+            class="form-control col-12 col-md-8 edih"
+            id="pass_conf_update"
+            name="pass_conf"
+            value="{{this_user.password}}"
+          />
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-secondary">Update</button>
+        </div>
+      </form>
+    </div>
+
+    <!--------------------- Delete Account -------------------->
+
+    <!--------------------- Script Tags -------------------->
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+      integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+      integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
