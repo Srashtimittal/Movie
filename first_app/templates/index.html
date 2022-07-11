@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+
+    <title>FilmList</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>Filmlist</header>
+      <div>
+        {% if messages %}
+        <ul class="messages">
+              {% for message in messages %}         
+          <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+            {{ message }}
+          </li>
+              {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      <form action="/login" method="POST">
+        {% csrf_token %}
+        <div class="input-field">
+          <input type="text" name="email" required />
+          <label>Email</label>
+        </div>
+        <div class="input-field">
+          <input class="pswrd" type="password" name="password" required />
+          <span class="show">SHOW</span>
+          <label>Password</label>
+        </div>
+        <div class="button">
+          <div class="inner"></div>
+          <button>Sign In</button>
+        </div>
+      </form>
+      <div class="signup">Not a member? <a href="/signup">Sign up now</a></div>
+    </div>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script>
+      var input = document.querySelector(".pswrd");
+      var show = document.querySelector(".show");
+      show.addEventListener("click", active);
+      function active() {
+        if (input.type === "password") {
+          input.type = "text";
+          show.style.color = "#1DA1F2";
+          show.textContent = "Hide";
+        } else {
+          input.type = "password";
+          show.textContent = "Show";
+          show.style.color = "#111";
+        }
+      }
+    </script>
+  </body>
+</html>
